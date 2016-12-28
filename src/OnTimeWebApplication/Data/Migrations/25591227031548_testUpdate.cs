@@ -24,15 +24,17 @@ namespace OnTimeWebApplication.Data.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
+                unique: true);
+            //,
+            //filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
+                unique: true);
+                //,
+                //filter: "[NormalizedName] IS NOT NULL");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -11,6 +11,7 @@ namespace OnTimeWebApplication.Models
         public Student Student { get; set; }
 
         public string SubjectId { get; set; }
+        public byte SubjectSection { get; set; } 
         public Subject Subject { get; set; }
     }
 }

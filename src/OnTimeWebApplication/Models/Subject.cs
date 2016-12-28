@@ -8,11 +8,13 @@ namespace OnTimeWebApplication.Models
         [Required]
         public string Name { get; set; }
 
-        [Required]
         public string Id { get; set; }
 
+        public byte Section { get; set; }
+
+        public Teacher Teacher { get; set; }
         [Required]
-        public string Section { get; set; }
+        public string TeacherId { get; set; }
 
         public List<SubjectStudent> SubjectStudents { get; set; }
     }
