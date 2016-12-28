@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -44,6 +45,7 @@ namespace OnTimeWebApplication
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddRoleManager<AppRoleManager>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -52,6 +54,14 @@ namespace OnTimeWebApplication
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,6 +93,69 @@ namespace OnTimeWebApplication
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //InitializeApp(app.ApplicationServices);
+        }
+
+        private void InitializeApp(IServiceProvider services)
+        {
+            const string adminRoleName = "Admin";
+            const string studentRoleName = "Student";
+            const string lecturerRoleName = "Lecturer";
+            const string adminUsername3 = "admin3@gmail.com";
+
+            var roleManager = services.GetService<AppRoleManager>();
+            var userManager = services.GetService<UserManager<ApplicationUser>>();
+
+            if (roleManager == null || userManager == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            var adminRole = roleManager.FindByNameAsync(adminRoleName).Result;
+
+            if (adminRole == null)
+            {
+                adminRole = new IdentityRole(adminRoleName);
+                roleManager.CreateAsync(adminRole).Wait();
+            }
+
+            var studentRole = roleManager.FindByNameAsync(studentRoleName).Result;
+
+            if (studentRole == null)
+            {
+                studentRole = new IdentityRole(studentRoleName);
+                roleManager.CreateAsync(studentRole).Wait();
+            }
+
+            var lecturerRole = roleManager.FindByNameAsync(lecturerRoleName).Result;
+
+            if (lecturerRole == null)
+            {
+                lecturerRole = new IdentityRole(lecturerRoleName);
+                roleManager.CreateAsync(lecturerRole).Wait();
+            }
+
+            // create admin user3
+            var adminUser3 = userManager.FindByNameAsync(adminUsername3).Result;
+
+            if (adminUser3 == null)
+            {
+                adminUser3 = new ApplicationUser { UserName = adminUsername3, Email = adminUsername3 };
+                var result = userManager.CreateAsync(adminUser3, "Tni123456").Result;
+
+                if (!result.Succeeded)
+                {
+                    throw new Exception("Can't create admin user");
+                }
+
+                result = userManager.AddToRoleAsync(adminUser3, adminRoleName).Result;
+
+                if (!result.Succeeded)
+                {
+                    throw new Exception("Can't add admin role to admin3");
+                }
+            }
         }
     }
 }
