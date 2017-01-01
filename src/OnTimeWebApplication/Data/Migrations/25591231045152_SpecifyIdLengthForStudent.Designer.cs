@@ -8,9 +8,10 @@ using OnTimeWebApplication.Data;
 namespace OnTimeWebApplication.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("25591231045152_SpecifyIdLengthForStudent")]
+    partial class SpecifyIdLengthForStudent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
@@ -178,16 +179,13 @@ namespace OnTimeWebApplication.Data.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AccountId")
-                        .IsRequired();
+                    b.Property<string>("AccountId");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(30);
+                        .IsRequired();
 
                     b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(30);
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -203,68 +201,27 @@ namespace OnTimeWebApplication.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(10);
 
-                    b.Property<string>("AccountId")
+                    b.Property<string>("FirstName")
                         .IsRequired();
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(30);
-
                     b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(30);
-
-                    b.Property<string>("Tel")
-                        .HasMaxLength(10);
+                        .IsRequired();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AccountId")
-                        .IsUnique();
 
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("OnTimeWebApplication.Models.StudentViewModels.RegisterStudentViewModel", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(10);
-
-                    b.Property<string>("ConfirmPassword");
-
-                    b.Property<string>("Email")
-                        .IsRequired();
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(30);
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(30);
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(100);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RegisterStudentViewModel");
-                });
-
             modelBuilder.Entity("OnTimeWebApplication.Models.Subject", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasMaxLength(7);
+                    b.Property<string>("Id");
 
                     b.Property<byte>("Section");
 
                     b.Property<string>("LecturerId");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(30);
+                        .IsRequired();
 
                     b.Property<string>("TeacherId")
                         .IsRequired();
@@ -332,16 +289,7 @@ namespace OnTimeWebApplication.Data.Migrations
                 {
                     b.HasOne("OnTimeWebApplication.Models.ApplicationUser", "Account")
                         .WithOne()
-                        .HasForeignKey("OnTimeWebApplication.Models.Lecturer", "AccountId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("OnTimeWebApplication.Models.Student", b =>
-                {
-                    b.HasOne("OnTimeWebApplication.Models.ApplicationUser", "Account")
-                        .WithOne()
-                        .HasForeignKey("OnTimeWebApplication.Models.Student", "AccountId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("OnTimeWebApplication.Models.Lecturer", "AccountId");
                 });
 
             modelBuilder.Entity("OnTimeWebApplication.Models.Subject", b =>

@@ -50,6 +50,10 @@ namespace OnTimeWebApplication
                 .AddDefaultTokenProviders();
 
             services.AddMvc();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(Constant.AdministratorOnly, policy => policy.RequireRole(Constant.AdminRoleName, Constant.SuperAdminRoleName));
+            });
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -136,6 +140,14 @@ namespace OnTimeWebApplication
                 roleManager.CreateAsync(lecturerRole).Wait();
             }
 
+            var superAdminRole = roleManager.FindByNameAsync(Constant.SuperAdminRoleName).Result;
+
+            if (superAdminRole == null)
+            {
+                superAdminRole = new IdentityRole(Constant.SuperAdminRoleName);
+                roleManager.CreateAsync(superAdminRole).Wait();
+            }
+
             // create admin user3
             var adminUser3 = userManager.FindByNameAsync(adminUsername3).Result;
 
@@ -154,6 +166,36 @@ namespace OnTimeWebApplication
                 if (!result.Succeeded)
                 {
                     throw new Exception("Can't add admin role to admin3");
+                }
+            }
+
+            // create super admin
+            var SuperAdmin = userManager.FindByNameAsync("SuperAdmin").Result;
+
+            if (SuperAdmin == null)
+            {
+                SuperAdmin = new ApplicationUser { UserName = "SuperAdmin", Email = "superadmin@tni.ac.th" };
+                var result = userManager.CreateAsync(SuperAdmin, "123456").Result;
+
+                if (!result.Succeeded)
+                {
+                    throw new Exception("Can't create admin user");
+                }
+
+                // add super admin role
+                result = userManager.AddToRoleAsync(SuperAdmin, Constant.SuperAdminRoleName).Result;
+
+                if (!result.Succeeded)
+                {
+                    throw new Exception("Can't add superadmin role to SuperAdmin");
+                }
+
+                // add admin role
+                result = userManager.AddToRoleAsync(SuperAdmin, Constant.AdminRoleName).Result;
+
+                if (!result.Succeeded)
+                {
+                    throw new Exception("Can't add admin role to SuperAdmin");
                 }
             }
         }

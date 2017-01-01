@@ -5,6 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using OnTimeWebApplication.Models;
+using OnTimeWebApplication.Models.AccountViewModels;
+using OnTimeWebApplication.Models.StudentViewModels;
+using Microsoft.EntityFrameworkCore.Metadata;
+using OnTimeWebApplication.Models.LecturerViewModels;
+using OnTimeWebApplication.Models.AdminViewModels;
 
 namespace OnTimeWebApplication.Data
 {
@@ -12,7 +17,7 @@ namespace OnTimeWebApplication.Data
     {
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<SubjectStudent> SubjectStudents { get; set; }
-        public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<Lecturer> Lecturer { get; set; }
         public DbSet<Student> Students { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -38,6 +43,28 @@ namespace OnTimeWebApplication.Data
                 .HasOne<Student>(ss => ss.Student)
                 .WithMany(s => s.SubjectStudents)
                 .HasForeignKey(ss => ss.StudentId);
+
+            builder.Entity<Lecturer>()
+                .HasIndex(l => l.AccountId);
+
+            builder.Entity<Lecturer>()
+                .HasOne<ApplicationUser>(l => l.Account)
+                .WithOne(navigationName: null)
+                .HasForeignKey<Lecturer>(l => l.AccountId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+
+            builder.Entity<Student>()
+                .HasIndex(s => s.AccountId);
+
+            builder.Entity<Student>()
+                .HasOne<ApplicationUser>(s => s.Account)
+                .WithOne(navigationName: null)
+                .HasForeignKey<Student>(s => s.AccountId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
         }
+
+        public DbSet<RegisterStudentViewModel> RegisterStudentViewModel { get; set; }
     }
 }

@@ -1,0 +1,31 @@
+﻿@model List<AdminViewModel>
+
+@{ 
+    ViewData["Title"] = "Admin list";
+}
+<h2>Lecturer list</h2>
+
+<p>
+    <a asp-action="RegisterAdmin">Create New</a>
+</p>
+<div class="row">
+    <div class="col-md-4">
+        <table class="table table-bordered">
+            <tr>
+                <th>#</th>
+                <th>Admin name</th>
+                <th></th>
+            </tr>
+            @for (var i = 1; i <= Model.Count; i++)
+            {
+                <tr>
+                    <td>@i</td>
+                    <td>@Model[i - 1].UserName</td>
+                    <th>
+                        <a asp-action="Delete" asp-route-id="@Model[i - 1].Id">Delete</a>
+                    </th>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

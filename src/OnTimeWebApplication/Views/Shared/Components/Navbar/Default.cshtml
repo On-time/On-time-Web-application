@@ -1,0 +1,37 @@
+﻿@using OnTimeWebApplication;
+
+@model OnTimeWebApplication.ViewComponents.NavbarViewModel
+
+@{
+    if (Model.RoleNames == null)
+    {
+        return;
+    }
+    if (Model.RoleNames.Contains(Constant.SuperAdminRoleName))
+    {
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a asp-controller="Admin" asp-action="AdminList">Admin list</a></li>
+                <li><a asp-controller="Admin" asp-action="RegisterAdmin">Create admin</a></li>
+            </ul>
+        </li>
+    }
+    if (Model.RoleNames.Contains(Constant.AdminRoleName))
+    {
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Lecturer<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a asp-controller="Lecturer" asp-action="LecturerList">Lecturer list</a></li>
+                <li><a asp-controller="Lecturer" asp-action="RegisterLecturer">Create lecturer</a></li>
+            </ul>
+        </li>
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Student<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a asp-controller="Student" asp-action="StudentList">Student list</a></li>
+                <li><a asp-controller="Student" asp-action="RegisterStudent">Create student</a></li>
+            </ul>
+        </li>
+    }
+}

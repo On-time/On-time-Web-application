@@ -8,9 +8,10 @@ using OnTimeWebApplication.Data;
 namespace OnTimeWebApplication.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("25591231094342_UseCasCaseOnStudentAndLecturer")]
+    partial class UseCasCaseOnStudentAndLecturer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
@@ -178,8 +179,7 @@ namespace OnTimeWebApplication.Data.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AccountId")
-                        .IsRequired();
+                    b.Property<string>("AccountId");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -203,8 +203,7 @@ namespace OnTimeWebApplication.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(10);
 
-                    b.Property<string>("AccountId")
-                        .IsRequired();
+                    b.Property<string>("AccountId");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -213,9 +212,6 @@ namespace OnTimeWebApplication.Data.Migrations
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(30);
-
-                    b.Property<string>("Tel")
-                        .HasMaxLength(10);
 
                     b.HasKey("Id");
 

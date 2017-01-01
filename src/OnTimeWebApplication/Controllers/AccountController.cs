@@ -11,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using OnTimeWebApplication.Models;
 using OnTimeWebApplication.Models.AccountViewModels;
 using OnTimeWebApplication.Services;
+using OnTimeWebApplication.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace OnTimeWebApplication.Controllers
 {
@@ -19,6 +21,8 @@ namespace OnTimeWebApplication.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationDbContext _context;
+        private readonly AppRoleManager _roleManager;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
@@ -26,12 +30,16 @@ namespace OnTimeWebApplication.Controllers
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
+            ApplicationDbContext dbContext,
+            AppRoleManager roleManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
             ILoggerFactory loggerFactory)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = dbContext;
+            _roleManager = roleManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
@@ -436,6 +444,15 @@ namespace OnTimeWebApplication.Controllers
             }
         }
 
+        //
+        // GET: /Account/AccessDenied
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         #region Helpers
 
         private void AddErrors(IdentityResult result)
@@ -462,7 +479,6 @@ namespace OnTimeWebApplication.Controllers
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
         }
-
         #endregion
     }
 }

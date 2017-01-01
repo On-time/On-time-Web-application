@@ -1,0 +1,42 @@
+﻿@model List<StudentViewModel>
+
+@{
+    ViewData["Title"] = "Student list";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>StudentList</h2>
+
+<p>
+    <a asp-action="RegisterStudent">Register student</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    รหัสนักศึกษา
+                </th>
+                <th>
+                    ชื่อ - นามสกุล
+                </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@for (var i = 1; i <= Model.Count; i++) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => Model[i - 1].Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => Model[i - 1].FirstName) @Html.DisplayFor(modelItem => Model[i - 1].LastName)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@Model[i - 1].Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@Model[i - 1].Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@Model[i - 1].Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
