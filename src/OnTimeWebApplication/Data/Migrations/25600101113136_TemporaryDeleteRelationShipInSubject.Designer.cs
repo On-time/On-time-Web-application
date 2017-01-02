@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using OnTimeWebApplication.Data;
-using OnTimeWebApplication.Models;
 
 namespace OnTimeWebApplication.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("25600101113136_TemporaryDeleteRelationShipInSubject")]
+    partial class TemporaryDeleteRelationShipInSubject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
@@ -195,7 +195,7 @@ namespace OnTimeWebApplication.Data.Migrations
                     b.HasIndex("AccountId")
                         .IsUnique();
 
-                    b.ToTable("Lecturers");
+                    b.ToTable("Lecturer");
                 });
 
             modelBuilder.Entity("OnTimeWebApplication.Models.Student", b =>
@@ -261,17 +261,11 @@ namespace OnTimeWebApplication.Data.Migrations
 
                     b.Property<byte>("Section");
 
-                    b.Property<TimeSpan>("AbsentTime");
-
-                    b.Property<TimeSpan>("LateTime");
-
                     b.Property<string>("LecturerId");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30);
-
-                    b.Property<bool>("UseComeAbsent");
 
                     b.HasKey("Id", "Section");
 
@@ -293,26 +287,6 @@ namespace OnTimeWebApplication.Data.Migrations
                     b.HasIndex("SubjectId", "SubjectSection");
 
                     b.ToTable("SubjectStudents");
-                });
-
-            modelBuilder.Entity("OnTimeWebApplication.Models.SubjectTime", b =>
-                {
-                    b.Property<string>("SubjectId")
-                        .HasMaxLength(7);
-
-                    b.Property<byte>("Section");
-
-                    b.Property<int>("DayOfWeek");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2(0)");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2(0)");
-
-                    b.HasKey("SubjectId", "Section", "DayOfWeek");
-
-                    b.ToTable("SubjectTimes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
@@ -370,10 +344,9 @@ namespace OnTimeWebApplication.Data.Migrations
 
             modelBuilder.Entity("OnTimeWebApplication.Models.Subject", b =>
                 {
-                    b.HasOne("OnTimeWebApplication.Models.Lecturer", "Lecturer")
+                    b.HasOne("OnTimeWebApplication.Models.Lecturer")
                         .WithMany("Subjects")
-                        .HasForeignKey("LecturerId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("LecturerId");
                 });
 
             modelBuilder.Entity("OnTimeWebApplication.Models.SubjectStudent", b =>
@@ -386,14 +359,6 @@ namespace OnTimeWebApplication.Data.Migrations
                     b.HasOne("OnTimeWebApplication.Models.Subject", "Subject")
                         .WithMany("SubjectStudents")
                         .HasForeignKey("SubjectId", "SubjectSection")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("OnTimeWebApplication.Models.SubjectTime", b =>
-                {
-                    b.HasOne("OnTimeWebApplication.Models.Subject", "Subject")
-                        .WithMany("SubjectTimes")
-                        .HasForeignKey("SubjectId", "Section")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
         }

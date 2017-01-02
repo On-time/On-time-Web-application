@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnTimeWebApplication.Models
 {
@@ -17,6 +18,9 @@ namespace OnTimeWebApplication.Models
         [Required]
         [MaxLength(30)]
         public string LastName { get; set; }
+
+        [NotMapped]
+        public string FullName { get { return $"{FirstName} {LastName}"; } }
 
         [StringLength(maximumLength: 10, MinimumLength = 10)]
         public string Tel { get; set; }

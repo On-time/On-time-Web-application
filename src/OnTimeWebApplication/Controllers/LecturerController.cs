@@ -41,7 +41,7 @@ namespace OnTimeWebApplication.Controllers
         [Authorize(Policy = Constant.AdministratorOnly)]
         public async Task<IActionResult> LecturerList()
         {
-            var lecturerList = await _context.Lecturer.AsNoTracking().ToListAsync();
+            var lecturerList = await _context.Lecturers.AsNoTracking().ToListAsync();
             var viewModel = lecturerList.Select(lec => new LecturerViewModel { Id = lec.Id, FirstName = lec.FirstName, LastName = lec.LastName }).ToList();
 
             return View(viewModel);
@@ -76,7 +76,7 @@ namespace OnTimeWebApplication.Controllers
                     result = await _userManager.AddToRoleAsync(user, Constant.LecturerRoleName);
                     if (result.Succeeded)
                     {
-                        var ss = await _context.Lecturer.AddAsync(new Lecturer { FirstName = viewModel.FirstName, LastName = viewModel.LastName, AccountId = user.Id });
+                        var ss = await _context.Lecturers.AddAsync(new Lecturer { FirstName = viewModel.FirstName, LastName = viewModel.LastName, AccountId = user.Id });
                         var re = await _context.SaveChangesAsync();
                         _logger.LogInformation(3, "User lecturer created a new account with password.");
                         return RedirectToLocal(returnUrl);
@@ -102,7 +102,7 @@ namespace OnTimeWebApplication.Controllers
                 return StatusCode(404);
             }
 
-            Lecturer lecturer = await _context.Lecturer.FindAsync(id);
+            Lecturer lecturer = await _context.Lecturers.FindAsync(id);
 
             if (lecturer == null)
             {
@@ -120,7 +120,7 @@ namespace OnTimeWebApplication.Controllers
         [Authorize(Policy = Constant.AdministratorOnly)]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var lecturer = await _context.Lecturer.Include(s => s.Account).Where(l => l.Id == id).FirstOrDefaultAsync();
+            var lecturer = await _context.Lecturers.Include(s => s.Account).Where(l => l.Id == id).FirstOrDefaultAsync();
 
             if (lecturer == null)
             {

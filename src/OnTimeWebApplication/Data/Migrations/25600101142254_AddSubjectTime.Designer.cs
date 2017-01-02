@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using OnTimeWebApplication.Data;
-using OnTimeWebApplication.Models;
 
 namespace OnTimeWebApplication.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("25600101142254_AddSubjectTime")]
+    partial class AddSubjectTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
@@ -302,7 +302,8 @@ namespace OnTimeWebApplication.Data.Migrations
 
                     b.Property<byte>("Section");
 
-                    b.Property<int>("DayOfWeek");
+                    b.Property<string>("DayOfWeek")
+                        .HasMaxLength(3);
 
                     b.Property<DateTime>("End")
                         .HasColumnType("datetime2(0)");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnTimeWebApplication.Models
 {
@@ -23,5 +24,12 @@ namespace OnTimeWebApplication.Models
         public ApplicationUser Account { get; set; }
 
         public List<Subject> Subjects { get; set; }
+
+        [Display(Name = "อาจารย์")]
+        [NotMapped]
+        public string FullName
+        {
+            get { return $"{FirstName} {LastName}"; }
+        }
     }
 }

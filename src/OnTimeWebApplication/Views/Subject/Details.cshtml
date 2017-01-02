@@ -1,0 +1,94 @@
+﻿@model SubjectViewModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Subject</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Section)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Section)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LateTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LateTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AbsentTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AbsentTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UseComeAbsent)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UseComeAbsent)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Lecturer.FullName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Lecturer.FullName)
+        </dd>
+    </dl>
+    <h4>วันที่เรียน</h4>
+    <table class="table">
+        <tr>
+            <th>วันที่เรียน</th>
+            <th>เวลาเริ่ม</th>
+            <th>เวลาเลิก</th>
+        </tr>
+        @foreach (var subjectTime in Model.SubjectTimes)
+        {
+            <tr>
+                <td>@Html.DisplayFor(model => subjectTime.DayOfWeek)</td>
+                <td>@subjectTime.Start.ToString("t")</td>
+                <td>@subjectTime.End.ToString("t")</td>
+            </tr>
+        }
+    </table>
+    <hr />
+    <h4>นักศึกษาที่เรียน</h4>
+    <table class="table">
+        <tr>
+            <th>#</th>
+            <th>รหัสนักศึกษา</th>
+            <th>ชื่อ-นามสกุล</th>
+        </tr>
+        @foreach (var student in Model.Students)
+        {
+            <tr>
+                <td>1</td>
+                <td>@student.Id</td>
+                <td>@student.FullName</td>
+            </tr>
+        }
+    </table>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id, section = Model.Section }) |
+    <a asp-action="SubjectList">Back to List</a>
+</div>

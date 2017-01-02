@@ -1,0 +1,61 @@
+﻿@model AddSubjectTimeViewModel
+
+@{
+    ViewData["Title"] = "AddSubjectTime";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>เพิ่มเวลาเรียนของวิชา @Model.Name เซค @Model.Section</h2>
+
+<form asp-action="AddSubjectTime">
+    <div class="form-horizontal">
+        <h4>เพิ่มชั่วโมงเรียน</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <p>เวลาเข้าเรียน</p>
+        <div class="form-group">
+            <label asp-for="StartHr" class="col-md-1 control-label"></label>
+            <div class="col-md-1">
+                <select asp-for="StartHr" asp-items="ViewBag.HourClock"></select>
+                <span asp-validation-for="StartHr" class="text-danger"></span>
+            </div>
+            <label asp-for="StartMin" class="col-md-1 control-label"></label>
+            <div class="col-md-1">
+                <select asp-for="StartMin" asp-items="ViewBag.MinuteClock"></select>
+                <span asp-validation-for="StartMin" class="text-danger"></span>
+            </div>
+        </div>
+        <hr />
+        <div class="form-group">
+            <label asp-for="EndHr" class="col-md-1 control-label"></label>
+            <div class="col-md-1">
+                <select asp-for="EndHr" asp-items="ViewBag.HourClock"></select>
+                <span asp-validation-for="EndHr" class="text-danger"></span>
+            </div>
+            <label asp-for="EndMin" class="col-md-1 control-label"></label>
+            <div class="col-md-1">
+                <select asp-for="EndMin" asp-items="ViewBag.MinuteClock"></select>
+                <span asp-validation-for="EndMin" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="DayOfWeek" class="col-md-1 control-label"></label>
+            <div class="col-md-2">
+                <select asp-for="DayOfWeek" asp-items="Html.GetEnumSelectList<DayOfWeek>()"></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="SubjectList">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace OnTimeWebApplication.Models
+namespace OnTimeWebApplication.Models.SubjectViewModels
 {
-    public class Subject
+    public class SubjectViewModel
     {
         [Required]
         [Display(Name = "ชื่อวิชา")]
@@ -34,6 +36,6 @@ namespace OnTimeWebApplication.Models
 
         public List<SubjectTime> SubjectTimes { get; set; }
 
-        public List<SubjectStudent> SubjectStudents { get; set; }
+        public List<Student> Students { get; set; }
     }
 }
