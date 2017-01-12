@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Hangfire;
 using OnTimeWebApplication.Data;
 using OnTimeWebApplication.Models;
 using OnTimeWebApplication.Services;
@@ -43,6 +45,8 @@ namespace OnTimeWebApplication
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<AttendanceCheckingDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddRoleManager<AppRoleManager>()
@@ -53,6 +57,7 @@ namespace OnTimeWebApplication
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(Constant.AdministratorOnly, policy => policy.RequireRole(Constant.AdminRoleName, Constant.SuperAdminRoleName));
+                options.AddPolicy(Constant.StudentAndLecturer, policy => policy.RequireRole(Constant.StudentRoleName, Constant.LecturerRoleName));
             });
 
             // Add application services.
@@ -66,6 +71,10 @@ namespace OnTimeWebApplication
                 options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
             });
+
+            // add auto reoccur attendance checking
+            services.AddHangfire(config =>
+                config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,7 +95,6 @@ namespace OnTimeWebApplication
             }
 
             app.UseStaticFiles();
-
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
@@ -98,16 +106,13 @@ namespace OnTimeWebApplication
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
+            app.UseHangfireServer();
+
             //InitializeApp(app.ApplicationServices);
         }
 
         private void InitializeApp(IServiceProvider services)
         {
-            const string adminRoleName = "Admin";
-            const string studentRoleName = "Student";
-            const string lecturerRoleName = "Lecturer";
-            const string adminUsername3 = "admin3@gmail.com";
-
             var roleManager = services.GetService<AppRoleManager>();
             var userManager = services.GetService<UserManager<ApplicationUser>>();
 
@@ -116,27 +121,27 @@ namespace OnTimeWebApplication
                 throw new NullReferenceException();
             }
 
-            var adminRole = roleManager.FindByNameAsync(adminRoleName).Result;
+            var adminRole = roleManager.FindByNameAsync(Constant.AdminRoleName).Result;
 
             if (adminRole == null)
             {
-                adminRole = new IdentityRole(adminRoleName);
+                adminRole = new IdentityRole(Constant.AdminRoleName);
                 roleManager.CreateAsync(adminRole).Wait();
             }
 
-            var studentRole = roleManager.FindByNameAsync(studentRoleName).Result;
+            var studentRole = roleManager.FindByNameAsync(Constant.StudentRoleName).Result;
 
             if (studentRole == null)
             {
-                studentRole = new IdentityRole(studentRoleName);
+                studentRole = new IdentityRole(Constant.StudentRoleName);
                 roleManager.CreateAsync(studentRole).Wait();
             }
 
-            var lecturerRole = roleManager.FindByNameAsync(lecturerRoleName).Result;
+            var lecturerRole = roleManager.FindByNameAsync(Constant.LecturerRoleName).Result;
 
             if (lecturerRole == null)
             {
-                lecturerRole = new IdentityRole(lecturerRoleName);
+                lecturerRole = new IdentityRole(Constant.LecturerRoleName);
                 roleManager.CreateAsync(lecturerRole).Wait();
             }
 
@@ -146,27 +151,6 @@ namespace OnTimeWebApplication
             {
                 superAdminRole = new IdentityRole(Constant.SuperAdminRoleName);
                 roleManager.CreateAsync(superAdminRole).Wait();
-            }
-
-            // create admin user3
-            var adminUser3 = userManager.FindByNameAsync(adminUsername3).Result;
-
-            if (adminUser3 == null)
-            {
-                adminUser3 = new ApplicationUser { UserName = adminUsername3, Email = adminUsername3 };
-                var result = userManager.CreateAsync(adminUser3, "Tni123456").Result;
-
-                if (!result.Succeeded)
-                {
-                    throw new Exception("Can't create admin user");
-                }
-
-                result = userManager.AddToRoleAsync(adminUser3, adminRoleName).Result;
-
-                if (!result.Succeeded)
-                {
-                    throw new Exception("Can't add admin role to admin3");
-                }
             }
 
             // create super admin

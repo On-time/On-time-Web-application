@@ -1,0 +1,104 @@
+﻿@model AddStudentToClassViewModel
+
+@{
+    ViewData["Title"] = "AddStudentToSubject";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <h2>เพิ่มนักเรียกเข้าสู่วิชา</h2>
+
+    <div class="form-horizontal">
+        <h4>วิชา @Model.Subject.Name</h4>
+        <hr />
+        <div class="form-group">
+            <label class="col-md-2 control-label">นักศึกษา</label>
+            <div class="col-md-10">
+                <select id="selectedStudent" class="form-control" asp-items="ViewBag.SelectableStudent"></select>
+                <label id="errorMsg" class="text-danger"></label>
+                <label id="successMsg" class="text-success"></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button onclick="addToClass()" class="btn btn-default">เพิ่ม</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <table id="studentTable" class="table">
+        <thead>
+            <tr>
+                <th>รหัสนักศึกษา</th>
+                <th>ชื่อ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in Model.StudentInClass)
+            {
+                <tr>
+                    <td>@student.Id</td>
+                    <td>@student.FullName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <a asp-action="SubjectList">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script>
+    var studentTable = $('#studentTable > tbody')
+    var subId = '@Model.Subject.Id'
+    var subSection = @Model.Subject.Section
+
+    function addToClass() {
+        var studentId = $('#selectedStudent').val()
+
+        if (studentId == undefined) {
+            return
+        }
+
+        $.ajax({
+            url: '',
+            method: 'POST',
+            dataType: 'json',
+            beforeSend: hideResultLabel,
+            error: onAddError,
+            success: onAddSuccess,
+            data: { id: subId, section: subSection, studentId: studentId }
+        })
+    }
+
+    function onAddError() {
+        showErrorMessage('receive response error')
+    }
+
+    function onAddSuccess(data, status) {
+        if (status == 'notmodified') {
+            $('#successMsg').show().text('เคยเพิ่มแล้ว')
+            return
+        }
+        $('#successMsg').show().text('เพิ่มแล้ว')
+        studentTable.append('<tr><td>' + data.id + '</td><td>' + data.name + '</td>' + '</tr>')
+    }
+
+    function showErrorMessage(msg) {
+        $('#errorMsg').show().text(msg)
+    }
+
+    function hideResultLabel() {
+        $('#errorMsg').hide()
+        $('#successMsg').hide()
+    }
+
+    $.ready(function() {
+        hideResultLabel()
+    })
+</script>
+}

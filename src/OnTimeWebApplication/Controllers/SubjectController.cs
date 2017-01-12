@@ -256,6 +256,61 @@ namespace OnTimeWebApplication.Controllers
             return View(viewModel);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> AddStudentToSubject(string id, byte? section)
+        {
+            var subject = await _context.Subjects.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id && s.Section == section);            
+            var studentInClasses = await _context.SubjectStudents.AsNoTracking()
+                .Include(ss => ss.Student).Where(ss => ss.SubjectId == id && ss.SubjectSection == section)
+                .Select(ss => ss.Student).ToListAsync();
+            var students = await _context.Students.AsNoTracking().Where(s => !studentInClasses.Contains(s)).ToListAsync();
+
+            var viewModel = new AddStudentToClassViewModel
+            {
+                Subject = subject,
+                StudentInClass = studentInClasses,
+                Students = students
+            };
+
+            ViewData["SelectableStudent"] = new SelectList(students, "Id", "FullName");
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddStudentToSubject(string id, byte? section, string studentId)
+        {
+            var exist = await _context.Subjects.Where(s => s.Id == id && s.Section == section).AnyAsync();
+
+            if (!exist) return NotFound();
+
+            var student = await _context.Students.Where(s => s.Id == studentId).FirstOrDefaultAsync();
+
+            if (student == null) return NotFound();
+
+            var alreadyAdd = _context.SubjectStudents.Where(ss => ss.StudentId == studentId && ss.SubjectId == id && ss.SubjectSection == section).Any();
+
+            if (alreadyAdd)
+            {
+                return StatusCode(304);
+                //return Json(new { id = student.Id, name = student.FullName });
+            }
+
+            var subjectStudent = new SubjectStudent
+            {
+                StudentId = studentId,
+                SubjectId = id,
+                SubjectSection = section.Value
+            };
+
+            await _context.SubjectStudents.AddAsync(subjectStudent);
+            var addResult = await _context.SaveChangesAsync();
+
+            if (addResult == 0) return StatusCode(500);
+
+            return Json(new { id = student.Id, name = student.FullName });
+        }
+
         private bool SubjectExists(string id)
         {
             return _context.Subjects.Any(e => e.Id == id);

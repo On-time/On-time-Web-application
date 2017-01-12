@@ -15,6 +15,7 @@ namespace OnTimeWebApplication.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        public DbSet<Attendance> Attendance { get; set; }
         public DbSet<SubjectTime> SubjectTimes { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<SubjectStudent> SubjectStudents { get; set; }
@@ -80,6 +81,19 @@ namespace OnTimeWebApplication.Data
                 .HasForeignKey(st => new { st.SubjectId, st.Section })
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
+
+            builder.Entity<Attendance>()
+                .HasKey(a => new { a.SubjectId, a.SubjectSection, a.StudentId, a.AttendedTime });
+
+            builder.Entity<Attendance>()
+                .HasOne<Subject>(a => a.Subject)
+                .WithMany(navigationName: null)
+                .HasForeignKey(a => new { a.SubjectId, a.SubjectSection });
+
+            builder.Entity<Attendance>()
+                .HasOne<Student>(a => a.Student)
+                .WithMany(navigationName: null)
+                .HasForeignKey(a => a.StudentId);
         }
 
         public DbSet<RegisterStudentViewModel> RegisterStudentViewModel { get; set; }

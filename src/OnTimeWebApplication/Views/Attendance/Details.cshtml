@@ -1,0 +1,29 @@
+﻿@model CurrentCheckingViewModel
+
+@{
+    ViewData["Title"] = $"เช็คชื่อวิชา {Model.Subject.Name}";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>การเช็คชื่อขณะนี้ของวิชา @Model.Subject.Name</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>รหัสนักศึกษา</th>
+            <th>ชื่อ</th>
+            <th>สถานะ</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in Model.Students)
+        {
+            <tr>
+                <td>@student.Id</td>
+                <td>@student.Name</td>
+                <td>@Html.DisplayFor(model => student.AttendState)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<hr />

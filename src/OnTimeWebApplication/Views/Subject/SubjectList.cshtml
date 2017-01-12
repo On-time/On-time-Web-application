@@ -39,6 +39,7 @@
             </td>
             <td>
                 @Html.ActionLink("Add study time", "AddSubjectTime", new { Id = item.Id, Section = item.Section }) |
+                @Html.ActionLink("Add student to class", "AddStudentToSubject", new { Id = item.Id, Section = item.Section }) |
                 @Html.ActionLink("Edit", "Edit", new { Id = item.Id, Section = item.Section }) |
                 @Html.ActionLink("Details", "Details", new { Id = item.Id, Section = item.Section }) |
                 @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })

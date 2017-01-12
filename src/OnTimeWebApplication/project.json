@@ -2,7 +2,6 @@
   "userSecretsId": "aspnet-OnTimeWebApplication-9dac18bb-2163-4344-92b5-3687b94dd327",
 
   "dependencies": {
-    "BundlerMinifier.Core": "2.2.306",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.1.0",
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.1.0",
@@ -20,7 +19,6 @@
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
     "Microsoft.AspNetCore.WebSockets": "1.0.0",
-    "Microsoft.AspNetCore.SignalR.Server": "0.2.0-*",
     "Microsoft.AspNetCore.Http.Features": "1.1.0",
     "Microsoft.VisualStudio.Web.BrowserLink": "1.0.0",
     "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
@@ -32,18 +30,21 @@
     "Microsoft.AspNetCore.Razor.Design": "1.1.0-preview4-final",
     "Microsoft.VisualStudio.Web.CodeGeneration.Tools": "1.1.0-preview4-final",
     "Microsoft.AspNetCore.Razor.Tools": "1.1.0-preview4-final",
-    "Microsoft.Extensions.Testing.Abstractions": "1.0.0-preview1-002702"
+    "BundlerMinifier.Core": "2.2.306",
+    "Hangfire.AspNetCore": "1.6.8",
+    "Hangfire": "1.6.8"
   },
 
   "tools": {
+    "BundlerMinifier.Core": "2.2.306",
     "Microsoft.AspNetCore.Razor.Tools": {
       "version": "1.1.0-preview4-final",
-      "imports": ["portable-net45+win8"]
+      "imports": [ "portable-net45+win8" ]
     },
     "Microsoft.EntityFrameworkCore.Tools": "1.1.0-preview4-final",
     "Microsoft.VisualStudio.Web.CodeGeneration.Tools": {
       "version": "1.1.0-preview4-final",
-      "imports": ["portable-net45+win8"]
+      "imports": [ "portable-net45+win8" ]
     }
   },
 

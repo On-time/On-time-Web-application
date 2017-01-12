@@ -12,6 +12,7 @@ namespace OnTimeWebApplication
         public const string StudentRoleName = "Student";
         public const string LecturerRoleName = "Lecturer";
 
+        public const string StudentAndLecturer = "StudentLecturer";
         public const string AdministratorOnly = "AdministratorOnly";
     }
 }
