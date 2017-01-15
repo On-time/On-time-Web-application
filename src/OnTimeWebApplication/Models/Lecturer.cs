@@ -25,6 +25,9 @@ namespace OnTimeWebApplication.Models
 
         public List<Subject> Subjects { get; set; }
 
+        [StringLength(maximumLength: 10, MinimumLength = 10)]
+        public string Tel { get; set; }
+
         [Display(Name = "อาจารย์")]
         [NotMapped]
         public string FullName

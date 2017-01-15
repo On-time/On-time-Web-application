@@ -5,9 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Hangfire;
 using OnTimeWebApplication.Data;
 using OnTimeWebApplication.Models;
 using OnTimeWebApplication.Models.SubjectViewModels;
+using OnTimeWebApplication.Services;
+using OnTimeWebApplication.Utilities;
 
 namespace OnTimeWebApplication.Controllers
 {
@@ -240,6 +243,11 @@ namespace OnTimeWebApplication.Controllers
 
                 if (result > 0)
                 {
+                    RecurringJob.AddOrUpdate<AttendanceCheckingService>(a => a.AddCurrentChecking(subjectTime.SubjectId, subjectTime.Section, subjectTime.DayOfWeek),
+                        CronExUtil.CreateCron(new DateTime[] { subjectTime.Start }, new DayOfWeek[] { subjectTime.DayOfWeek }));
+                    RecurringJob.AddOrUpdate(() => AttendanceCheckingService.RemoveCurrentChecking(subjectTime.SubjectId, subjectTime.Section),
+                        CronExUtil.CreateCron(new DateTime[] { subjectTime.End }, new DayOfWeek[] { subjectTime.DayOfWeek }));
+
                     return RedirectToAction(nameof(SubjectController.Details), new { id = viewModel.Id, section = viewModel.Section });
                 }
                 else
@@ -254,6 +262,13 @@ namespace OnTimeWebApplication.Controllers
             ViewData["MinuteClock"] = new SelectList(Enumerable.Range(0, 60));
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteSubjectTime(string id, byte section, DayOfWeek dayOfWeek)
+        {
+
+            return Json(new { dayOfWeek = Enum.GetName(typeof(DayOfWeek), dayOfWeek) });
         }
 
         [HttpGet]

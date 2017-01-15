@@ -15,6 +15,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OnTimeWebApplication", "src\OnTimeWebApplication\OnTimeWebApplication.xproj", "{23CF77FA-EC09-410A-9B1B-EE0BAC92B2EE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A4437399-9E0D-42E2-806C-799B4B8983BE}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OntimeWebAppTest", "OntimeWebAppTest\OntimeWebAppTest.xproj", "{28FC93B5-0ECF-4064-8C5D-CB7EFB431702}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,11 +29,16 @@ Global
 		{23CF77FA-EC09-410A-9B1B-EE0BAC92B2EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23CF77FA-EC09-410A-9B1B-EE0BAC92B2EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23CF77FA-EC09-410A-9B1B-EE0BAC92B2EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28FC93B5-0ECF-4064-8C5D-CB7EFB431702}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28FC93B5-0ECF-4064-8C5D-CB7EFB431702}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28FC93B5-0ECF-4064-8C5D-CB7EFB431702}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28FC93B5-0ECF-4064-8C5D-CB7EFB431702}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{23CF77FA-EC09-410A-9B1B-EE0BAC92B2EE} = {C5877630-52AD-4EF7-AC03-D5FA0F8AE5BB}
+		{28FC93B5-0ECF-4064-8C5D-CB7EFB431702} = {A4437399-9E0D-42E2-806C-799B4B8983BE}
 	EndGlobalSection
 EndGlobal

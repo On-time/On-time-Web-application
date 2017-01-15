@@ -13,6 +13,8 @@ namespace OnTimeWebApplication.Data
 
         public DbSet<Subject> Subjects { get; set; }
 
+        public DbSet<SubjectTime> SubjectTimes { get; set; }
+
         public AttendanceCheckingDbContext(DbContextOptions<AttendanceCheckingDbContext> options) : base(options) { }
     }
 }

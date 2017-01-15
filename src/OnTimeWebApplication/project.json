@@ -32,7 +32,8 @@
     "Microsoft.AspNetCore.Razor.Tools": "1.1.0-preview4-final",
     "BundlerMinifier.Core": "2.2.306",
     "Hangfire.AspNetCore": "1.6.8",
-    "Hangfire": "1.6.8"
+    "Hangfire": "1.6.8",
+    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.1.0"
   },
 
   "tools": {

@@ -55,18 +55,20 @@
         </dd>
     </dl>
     <h4>วันที่เรียน</h4>
-    <table class="table">
+    <table id="timeTable" class="table">
         <tr>
             <th>วันที่เรียน</th>
             <th>เวลาเริ่ม</th>
             <th>เวลาเลิก</th>
+            <th></th>
         </tr>
         @foreach (var subjectTime in Model.SubjectTimes)
         {
-            <tr>
+            <tr id="@subjectTime.DayOfWeek">
                 <td>@Html.DisplayFor(model => subjectTime.DayOfWeek)</td>
                 <td>@subjectTime.Start.ToString("t")</td>
                 <td>@subjectTime.End.ToString("t")</td>
+                <td><a href="#" onclick="deleteSubjectTime('@subjectTime.SubjectId', @subjectTime.Section, '@subjectTime.DayOfWeek')">ลบ</a></td>
             </tr>
         }
     </table>
@@ -92,3 +94,17 @@
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id, section = Model.Section }) |
     <a asp-action="SubjectList">Back to List</a>
 </div>
+@section scripts
+{
+<script>
+    function deleteSubjectTime(id, section, dayOfWeek) {
+        $.post('http://localhost:40437/subject/DeleteSubjectTime', { id: id, section: section, dayOfWeek: dayOfWeek }, onDeleteSuccess)
+    }
+
+    function onDeleteSuccess(data) {
+        var selector = '#' + data.dayOfWeek
+        $(selector).remove()
+        console.log("delete success")
+    }
+</script>
+}

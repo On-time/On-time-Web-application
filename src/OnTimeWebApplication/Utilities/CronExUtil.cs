@@ -59,12 +59,12 @@ namespace OnTimeWebApplication.Utilities
             });
 
             hourPortion = hourPortion.Remove(hourPortion.Length - 1);
-            minutePortion = minutePortion.Remove(hourPortion.Length - 1);
+            minutePortion = minutePortion.Remove(minutePortion.Length - 1);
 
-
+            // minute, hour, 
             string cron = $"{minutePortion} {hourPortion} * * {dayOfWeekPortion}";
 
-            return "";
+            return cron;
         }
     }
 }
