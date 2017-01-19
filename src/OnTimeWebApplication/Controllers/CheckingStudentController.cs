@@ -16,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 namespace OnTimeWebApplication.Controllers
 {
     [Produces("application/json")]
-    [Authorize(Roles = Constant.SuperAdminRoleName)]
+    [Authorize]
     [Route("api/checking")]
     public class CheckingStudentController : Controller
     {
@@ -41,6 +41,8 @@ namespace OnTimeWebApplication.Controllers
             {
                 return Json(new { status = "not yet" });
             }
+
+            await checkingService.CheckStudents(data.Students);
 
             return Json(new { status = "ok" });
         }

@@ -1,45 +1,112 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using OnTimeWebApplication.Data;
 using Microsoft.EntityFrameworkCore;
+using OnTimeWebApplication.Controllers;
+using OnTimeWebApplication.Models;
+using Hangfire;
+using Microsoft.Extensions.Options;
 
 namespace OnTimeWebApplication.Services
 {
     public class AttendanceCheckingService
     {
+        private string _subjectId;
+        private byte _section;
         private DateTime _startTime;
         private DateTime _endTime;
         private DateTime _lateTime;
         private DateTime _absentTime;
         private bool _useComeAbsent;
         private Task _initlizeAsync;
-        private AttendanceCheckingDbContext _context;
+        private DbContextOptionsBuilder<AttendanceCheckingDbContext> _efCoreOptionBuilder;
+        private List<string> _alreadyCheckedId = new List<string>();
 
-        public static Dictionary<Tuple<string, byte>, AttendanceCheckingService> Current { get; } = new Dictionary<Tuple<string, byte>, AttendanceCheckingService>();
+        public static ConcurrentDictionary<Tuple<string, byte>, AttendanceCheckingService> Current { get; } = new ConcurrentDictionary<Tuple<string, byte>, AttendanceCheckingService>();
 
-        public AttendanceCheckingService(AttendanceCheckingDbContext context)
+        public AttendanceCheckingService(IOptions<EFCoreOptions> options)
         {
-            _context = context;
+            _efCoreOptionBuilder = new DbContextOptionsBuilder<AttendanceCheckingDbContext>();
+            _efCoreOptionBuilder.UseSqlServer(options.Value.ConnectionString);
         }
 
+        [AutomaticRetry(Attempts = 0)]
         public async Task AddCurrentChecking(string subId, byte section, DayOfWeek dayOfWeek)
         {
-            var subjectTime = await _context.SubjectTimes.Where(st => st.SubjectId == subId && st.Section == section && st.DayOfWeek == dayOfWeek).FirstOrDefaultAsync();
-            var subject = await _context.Subjects.Where(s => s.Id == subId && s.Section == section).FirstOrDefaultAsync();
-            var now = DateTime.Now;
-            _startTime = new DateTime(now.Year, now.Month, now.Day, subjectTime.Start.Hour, subjectTime.Start.Minute, 0);
-            _endTime = new DateTime(now.Year, now.Month, now.Day, subjectTime.End.Hour, subjectTime.End.Minute, 0);
-            _lateTime = _startTime + subject.LateTime;
-            _absentTime = _startTime + subject.AbsentTime;
-            _useComeAbsent = subject.UseComeAbsent;
-            Current.Add(new Tuple<string, byte>(subId, section), this);
+            using (var context = new AttendanceCheckingDbContext(_efCoreOptionBuilder.Options))
+            {
+                var subjectTime = await context.SubjectTimes.Where(st => st.SubjectId == subId && st.Section == section && st.DayOfWeek == dayOfWeek).FirstOrDefaultAsync();
+                var subject = await context.Subjects.Where(s => s.Id == subId && s.Section == section).FirstOrDefaultAsync();
+                var now = DateTime.Now;
+                _startTime = new DateTime(now.Year, now.Month, now.Day, subjectTime.Start.Hour, subjectTime.Start.Minute, 0);
+                _endTime = new DateTime(now.Year, now.Month, now.Day, subjectTime.End.Hour, subjectTime.End.Minute, 0);
+                _lateTime = _startTime + subject.LateTime;
+                _absentTime = _startTime + subject.AbsentTime;
+                _useComeAbsent = subject.UseComeAbsent;
+                _subjectId = subId;
+                _section = section;
+
+                Current.AddOrUpdate(new Tuple<string, byte>(subId, section), this,
+                    (key, oldValue) => this);
+            }
         }
 
-        public static void RemoveCurrentChecking(string subId, byte section)
+        [AutomaticRetry(Attempts = 0)]
+        public static bool RemoveCurrentChecking(string subId, byte section)
         {
-            Current.Remove(new Tuple<string, byte>(subId, section));
+            AttendanceCheckingService temp;
+            return Current.TryRemove(new Tuple<string, byte>(subId, section), out temp);
+        }
+
+        public async Task CheckStudents(CheckingStudentData[] students)
+        {
+            using (var context = new AttendanceCheckingDbContext(_efCoreOptionBuilder.Options))
+            {
+                foreach (var student in students)
+                {
+                    if (_alreadyCheckedId.Contains(student.Id))
+                    {
+                        continue;
+                    }
+
+                    var attendance = new Attendance
+                    {
+                        StudentId = student.Id,
+                        SubjectId = _subjectId,
+                        SubjectSection = _section,
+                        AttendedTime = student.AttendTime
+                    };
+
+                    if (student.AttendTime <= _lateTime)
+                    {
+                        // he came on time
+                        attendance.AttendState = AttendState.InTime;
+                    }
+                    else if (student.AttendTime <= _absentTime)
+                    {
+                        // he came late
+                        attendance.AttendState = AttendState.Late;
+                    }
+                    else
+                    {
+                        // he absent
+                        attendance.AttendState = AttendState.Absent;
+
+                        if (_useComeAbsent)
+                        {
+                            // he came but absent
+                            attendance.AttendState = AttendState.AttendButAbsent;
+                        }
+                    }
+
+                    context.Attendance.Add(attendance);
+                }
+
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

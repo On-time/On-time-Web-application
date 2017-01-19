@@ -244,9 +244,9 @@ namespace OnTimeWebApplication.Controllers
                 if (result > 0)
                 {
                     RecurringJob.AddOrUpdate<AttendanceCheckingService>(a => a.AddCurrentChecking(subjectTime.SubjectId, subjectTime.Section, subjectTime.DayOfWeek),
-                        CronExUtil.CreateCron(new DateTime[] { subjectTime.Start }, new DayOfWeek[] { subjectTime.DayOfWeek }));
+                        CronExUtil.CreateCron(new DateTime[] { subjectTime.Start }, new DayOfWeek[] { subjectTime.DayOfWeek }), TimeZoneInfo.Local);
                     RecurringJob.AddOrUpdate(() => AttendanceCheckingService.RemoveCurrentChecking(subjectTime.SubjectId, subjectTime.Section),
-                        CronExUtil.CreateCron(new DateTime[] { subjectTime.End }, new DayOfWeek[] { subjectTime.DayOfWeek }));
+                        CronExUtil.CreateCron(new DateTime[] { subjectTime.End }, new DayOfWeek[] { subjectTime.DayOfWeek }), TimeZoneInfo.Local);
 
                     return RedirectToAction(nameof(SubjectController.Details), new { id = viewModel.Id, section = viewModel.Section });
                 }
@@ -267,6 +267,21 @@ namespace OnTimeWebApplication.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteSubjectTime(string id, byte section, DayOfWeek dayOfWeek)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var subjectTime = await _context.SubjectTimes
+                .Where(st => st.SubjectId == id && st.Section == section && st.DayOfWeek == dayOfWeek).FirstOrDefaultAsync();
+
+            if (subjectTime == null)
+            {
+                return NotFound();
+            }
+
+            _context.SubjectTimes.Remove(subjectTime);
+            await _context.SaveChangesAsync();
 
             return Json(new { dayOfWeek = Enum.GetName(typeof(DayOfWeek), dayOfWeek) });
         }

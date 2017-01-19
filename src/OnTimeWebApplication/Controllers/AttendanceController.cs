@@ -51,8 +51,8 @@ namespace OnTimeWebApplication.Controllers
             
             List<string> studentIds = attendances.Select(a => a.StudentId).ToList();
 
-            var studentInClass = await _context.Students.AsNoTracking()
-                .Where(ss => !studentIds.Contains(ss.Id)).ToListAsync();
+            var studentInClass = await _context.SubjectStudents.AsNoTracking().Include(ss => ss.Student)
+                .Where(ss => ss.SubjectId == id && !studentIds.Contains(ss.StudentId)).Select(ss => ss.Student).ToListAsync();
 
             var allStudents = attendances.Select(a => new CheckingStudentViewModel { Id = a.StudentId, Name = a.Student.FullName, AttendState = a.AttendState }).ToList();
             allStudents.AddRange(studentInClass.Select(sic => new CheckingStudentViewModel { Id = sic.Id, Name = sic.FullName, AttendState = AttendState.NotComeYet }));
