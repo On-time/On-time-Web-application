@@ -163,6 +163,8 @@ namespace OnTimeWebApplication
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseWebSockets();
+
             app.UseStaticFiles();
 
             app.UseJwtBearerAuthentication(new JwtBearerOptions
