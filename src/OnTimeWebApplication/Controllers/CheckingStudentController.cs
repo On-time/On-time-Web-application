@@ -64,8 +64,10 @@ namespace OnTimeWebApplication.Controllers
         }
 
         [HttpPost("student")]
-        public async Task<IActionResult> RegisterStudent(string username, string password, string tel)
+        public async Task<IActionResult> RegisterStudent(string username, string password, string androidId)
         {
+            return Json(new { status = "register student completed" });
+
             var signInResult = await _signInManager.PasswordSignInAsync(username, password, isPersistent: false, lockoutOnFailure: false);
 
             if (signInResult.Succeeded)
@@ -81,7 +83,7 @@ namespace OnTimeWebApplication.Controllers
 
                 var student = await _context.Students.Where(s => s.AccountId == studentAcc.Id).FirstOrDefaultAsync();
 
-                if (student.Tel == tel)
+                if (student.AndroidId == androidId)
                 {
                     return Json(new { status = "register student completed" });
                 }
@@ -114,7 +116,7 @@ namespace OnTimeWebApplication.Controllers
 
                 var lecturer = await _context.Lecturers.Where(s => s.AccountId == lecturerAcc.Id).FirstOrDefaultAsync();
 
-                if (lecturer.Tel == tel)
+                if (lecturer.AndroidId == tel)
                 {
                     return Json(new { status = "register lecturer completed" });
                 }
