@@ -66,8 +66,6 @@ namespace OnTimeWebApplication.Controllers
         [HttpPost("student")]
         public async Task<IActionResult> RegisterStudent(string username, string password, string androidId)
         {
-            return Json(new { status = "register student completed" });
-
             var signInResult = await _signInManager.PasswordSignInAsync(username, password, isPersistent: false, lockoutOnFailure: false);
 
             if (signInResult.Succeeded)
@@ -83,13 +81,18 @@ namespace OnTimeWebApplication.Controllers
 
                 var student = await _context.Students.Where(s => s.AccountId == studentAcc.Id).FirstOrDefaultAsync();
 
-                if (student.AndroidId == androidId)
+                if (student == null)
                 {
-                    return Json(new { status = "register student completed" });
+                    // normally, this shouldn't be null
+                    return Json(new { status = "student not found" });
+                    
                 }
                 else
                 {
-                    return Json(new { status = "register student fail, tel not match" });
+                    student.AndroidId = androidId;
+                    await _context.SaveChangesAsync();
+                    
+                    return Json(new { status = "register student completed" });
                 }
             }
             else
@@ -99,7 +102,7 @@ namespace OnTimeWebApplication.Controllers
         }
 
         [HttpPost("lecturer")]
-        public async Task<IActionResult> RegisterLecturer(string username, string password, string tel)
+        public async Task<IActionResult> RegisterLecturer(string username, string password, string androidId)
         {
             var signInResult = await _signInManager.PasswordSignInAsync(username, password, isPersistent: false, lockoutOnFailure: false);
 
@@ -116,13 +119,17 @@ namespace OnTimeWebApplication.Controllers
 
                 var lecturer = await _context.Lecturers.Where(s => s.AccountId == lecturerAcc.Id).FirstOrDefaultAsync();
 
-                if (lecturer.AndroidId == tel)
+                if (lecturer == null)
                 {
-                    return Json(new { status = "register lecturer completed" });
+                    // normally, this shouldn't be null
+                    return Json(new { status = "lecturer not found" });
                 }
                 else
                 {
-                    return Json(new { status = "register lecturer fail, tel not match" });
+                    lecturer.AndroidId = androidId;
+                    await _context.SaveChangesAsync();
+
+                    return Json(new { status = "register lecturer completed" });
                 }
             }
             else
