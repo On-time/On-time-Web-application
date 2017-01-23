@@ -19,12 +19,12 @@ namespace OnTimeWebApplication.Websocket
 
         public virtual async Task OnConnected(WebSocket socket)
         {
-            WebSocketConnectionManager.AddSocket(socket);
+            throw new NotImplementedException();
         }
 
         public virtual async Task OnDisconnected(WebSocket socket)
         {
-            await WebSocketConnectionManager.RemoveSocket(WebSocketConnectionManager.GetId(socket));
+            await WebSocketConnectionManager.RemoveSocket(socket);
         }
 
         public async Task SendMessageAsync(WebSocket socket, string message)
@@ -40,18 +40,26 @@ namespace OnTimeWebApplication.Websocket
                                    cancellationToken: CancellationToken.None);
         }
 
-        public async Task SendMessageAsync(string socketId, string message)
+        public async Task SendMessageAsync(string socketListId, string message)
         {
-            await SendMessageAsync(WebSocketConnectionManager.GetSocketById(socketId), message);
+            var sockets = WebSocketConnectionManager.GetSocketListById(socketListId);
+
+            foreach (var socket in sockets)
+            {
+                await SendMessageAsync(socket, message);
+            }
         }
 
-        public async Task SendMessageToAllAsync(string message)
+        public Task SendMessageToAllAsync(string message)
         {
-            foreach (var pair in WebSocketConnectionManager.GetAll())
+            throw new NotImplementedException();
+            #region old implement
+            /*foreach (var pair in WebSocketConnectionManager.GetAll())
             {
                 if (pair.Value.State == WebSocketState.Open)
                     await SendMessageAsync(pair.Value, message);
-            }
+            }*/
+            #endregion
         }
 
         public abstract Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer);

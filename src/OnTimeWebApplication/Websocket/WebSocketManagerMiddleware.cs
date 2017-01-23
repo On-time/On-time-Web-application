@@ -58,25 +58,6 @@ namespace OnTimeWebApplication.Websocket
             {
                 var result = await socket.ReceiveAsync(buffer: new ArraySegment<byte>(buffer),
                                                        cancellationToken: CancellationToken.None);
-                var realMsgLength = BitConverter.ToInt32(buffer.Take(4).ToArray(), 0);
-                int receivedData = result.Count - 4;
-
-                if (realMsgLength != receivedData)
-                {
-                    // remaining space in array
-                    var remainBuffer = buffer.Length - result.Count;
-                    // start index of empty space in array, base 0 index, so can use Count as value
-                    var startIndex = result.Count;
-
-                    do
-                    {
-                        result = await socket.ReceiveAsync(buffer: new ArraySegment<byte>(buffer, startIndex, remainBuffer),
-                                                       cancellationToken: CancellationToken.None);
-                        startIndex += result.Count;
-                        remainBuffer -= result.Count;
-                        receivedData += result.Count;
-                    } while (receivedData != realMsgLength);
-                }
 
                 handleMessage(result, buffer);
             }

@@ -16,7 +16,11 @@ namespace OnTimeWebApplication.Websocket
 
         public override Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
         {
-            var msg = JsonConvert.DeserializeObject<InitialConnectMessage>(Encoding.UTF8.GetString(buffer, 0, buffer.Length));
+            var initialMessage = JsonConvert.DeserializeObject<InitialConnectMessage>(Encoding.UTF8.GetString(buffer, 0, buffer.Length));
+            var socketList = WebSocketConnectionManager.GetSocketListById(initialMessage.SubjectId + initialMessage.Section);
+            socketList.Add(socket);
+
+            return Task.CompletedTask;
         }
     }
 
