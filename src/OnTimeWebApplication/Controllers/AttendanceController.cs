@@ -9,6 +9,7 @@ using OnTimeWebApplication.Data;
 using OnTimeWebApplication.Models;
 using OnTimeWebApplication.Models.AttendanceViewModels;
 using Microsoft.AspNetCore.Authorization;
+using OnTimeWebApplication.Services;
 
 namespace OnTimeWebApplication.Controllers
 {
@@ -25,7 +26,15 @@ namespace OnTimeWebApplication.Controllers
         // GET: Attendance
         public async Task<IActionResult> CurrentlyPerformCheckingList()
         {
-            var subjects = await _context.Subjects.ToListAsync();
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            var checkingServices = AttendanceCheckingService.Current.Select(d => d.Key).ToList();
+            var subjects = new List<Subject>();
+
+            foreach (var pair in checkingServices)
+            {
+                subjects.Add(await _context.Subjects.Where(s => s.Id == pair.Item1 && s.Section == pair.Item2).FirstOrDefaultAsync());
+            }
+
             return View(subjects);
         }
 

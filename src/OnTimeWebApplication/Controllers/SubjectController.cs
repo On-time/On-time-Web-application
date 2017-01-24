@@ -67,11 +67,6 @@ namespace OnTimeWebApplication.Controllers
 
             viewModel.Students = students;
 
-            if (subject == null)
-            {
-                return NotFound();
-            }
-
             return View(viewModel);
         }
 
