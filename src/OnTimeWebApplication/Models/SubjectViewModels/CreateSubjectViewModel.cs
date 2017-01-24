@@ -19,6 +19,7 @@ namespace OnTimeWebApplication.Models.SubjectViewModels
         public string Id { get; set; }
 
         [Required]
+        [Range(1, 127, ErrorMessage = "Section ต้องอยู่ระหว่าง 1 ถึง 127")]
         public byte Section { get; set; }
 
         [Required]
