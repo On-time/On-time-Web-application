@@ -35,6 +35,8 @@ namespace OnTimeWebApplication.Controllers
                 subjects.Add(await _context.Subjects.Where(s => s.Id == pair.Item1 && s.Section == pair.Item2).FirstOrDefaultAsync());
             }
 
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
+
             return View(subjects);
         }
 
