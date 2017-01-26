@@ -238,9 +238,12 @@ namespace OnTimeWebApplication.Controllers
 
                 if (result > 0)
                 {
-                    RecurringJob.AddOrUpdate<AttendanceCheckingService>(a => a.AddCurrentChecking(subjectTime.SubjectId, subjectTime.Section, subjectTime.DayOfWeek),
+                    RecurringJob.AddOrUpdate<AttendanceCheckingService>($"{viewModel.Id}{viewModel.Section}{viewModel.DayOfWeek}{viewModel.StartHr}add", 
+                        a => a.AddCurrentChecking(subjectTime.SubjectId, subjectTime.Section, subjectTime.DayOfWeek),
                         CronExUtil.CreateCron(new DateTime[] { subjectTime.Start }, new DayOfWeek[] { subjectTime.DayOfWeek }), TimeZoneInfo.Local);
-                    RecurringJob.AddOrUpdate(() => AttendanceCheckingService.RemoveCurrentChecking(subjectTime.SubjectId, subjectTime.Section),
+
+                    RecurringJob.AddOrUpdate($"{viewModel.Id}{viewModel.Section}{viewModel.DayOfWeek}{viewModel.StartHr}remove",
+                        () => AttendanceCheckingService.RemoveCurrentChecking(subjectTime.SubjectId, subjectTime.Section),
                         CronExUtil.CreateCron(new DateTime[] { subjectTime.End }, new DayOfWeek[] { subjectTime.DayOfWeek }), TimeZoneInfo.Local);
 
                     return RedirectToAction(nameof(SubjectController.Details), new { id = viewModel.Id, section = viewModel.Section });
