@@ -81,12 +81,12 @@
             <th>รหัสนักศึกษา</th>
             <th>ชื่อ-นามสกุล</th>
         </tr>
-        @foreach (var student in Model.Students)
+        @for (var i = 0; i < Model.Students.Count; i++)
         {
             <tr>
-                <td>1</td>
-                <td>@student.Id</td>
-                <td>@student.FullName</td>
+                <td></td>
+                <td>@Model.Students[i].Id</td>
+                <td>@Model.Students[i].FullName</td>
             </tr>
         }
     </table>
