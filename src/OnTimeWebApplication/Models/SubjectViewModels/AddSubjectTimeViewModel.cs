@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace OnTimeWebApplication.Models.SubjectViewModels
         [StringLength(maximumLength: 7, MinimumLength = 7)]
         public string Id { get; set; }
 
+        [HiddenInput]
         public byte Section { get; set; }
 
         public string Name { get; set; }

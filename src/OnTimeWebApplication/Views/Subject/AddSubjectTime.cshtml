@@ -14,6 +14,8 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <p>เวลาเข้าเรียน</p>
         <div class="form-group">
+            <!-- hidden input for sectin -->
+            <input asp-for="Section" />
             <label asp-for="StartHr" class="col-md-1 control-label"></label>
             <div class="col-md-1">
                 <select asp-for="StartHr" asp-items="ViewBag.HourClock"></select>
