@@ -7,8 +7,10 @@ using OnTimeWebApplication.Data;
 using Microsoft.EntityFrameworkCore;
 using OnTimeWebApplication.Controllers;
 using OnTimeWebApplication.Models;
+using OnTimeWebApplication.Websocket;
 using Hangfire;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace OnTimeWebApplication.Services
 {
@@ -23,14 +25,16 @@ namespace OnTimeWebApplication.Services
         private bool _useComeAbsent;
         private Task _initlizeAsync;
         private DbContextOptionsBuilder<AttendanceCheckingDbContext> _efCoreOptionBuilder;
+        private UpdatingWebSocketHandler _websocketHandler;
         private List<string> _alreadyCheckedId = new List<string>();
 
         public static ConcurrentDictionary<Tuple<string, byte>, AttendanceCheckingService> Current { get; } = new ConcurrentDictionary<Tuple<string, byte>, AttendanceCheckingService>();
 
-        public AttendanceCheckingService(IOptions<EFCoreOptions> options)
+        public AttendanceCheckingService(IOptions<EFCoreOptions> options, UpdatingWebSocketHandler websocketHandle)
         {
             _efCoreOptionBuilder = new DbContextOptionsBuilder<AttendanceCheckingDbContext>();
             _efCoreOptionBuilder.UseSqlServer(options.Value.ConnectionString);
+            _websocketHandler = websocketHandle;
         }
 
         [AutomaticRetry(Attempts = 0)]
@@ -63,6 +67,8 @@ namespace OnTimeWebApplication.Services
 
         public async Task CheckStudents(CheckingStudentData[] students)
         {
+            var attendList = new List<UpdateMessage>(students.Length);
+
             using (var context = new AttendanceCheckingDbContext(_efCoreOptionBuilder.Options))
             {
                 foreach (var student in students)
@@ -102,11 +108,21 @@ namespace OnTimeWebApplication.Services
                         }
                     }
 
+                    attendList.Add(new UpdateMessage { StudentId = attendance.StudentId, AttendState = attendance.AttendState });
                     context.Attendance.Add(attendance);
                 }
 
                 await context.SaveChangesAsync();
             }
+
+            var jsonString = JsonConvert.SerializeObject(attendList);
+            await _websocketHandler.SendMessageAsync($"{_subjectId}{_section}", jsonString);
+        }
+
+        private class UpdateMessage
+        {
+            public string StudentId { get; set; }
+            public AttendState AttendState { get; set; }
         }
     }
 }

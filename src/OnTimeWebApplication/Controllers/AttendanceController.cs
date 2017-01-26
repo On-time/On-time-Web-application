@@ -68,7 +68,10 @@ namespace OnTimeWebApplication.Controllers
             var allStudents = attendances.Select(a => new CheckingStudentViewModel { Id = a.StudentId, Name = a.Student.FullName, AttendState = a.AttendState }).ToList();
             allStudents.AddRange(studentInClass.Select(sic => new CheckingStudentViewModel { Id = sic.Id, Name = sic.FullName, AttendState = AttendState.NotComeYet }));
 
-            return View(new CurrentCheckingViewModel { Subject = subject, Students = allStudents });
+            var today = DateTime.Now.DayOfWeek;
+            var time = await _context.SubjectTimes.Where(st => st.SubjectId == id && st.Section == section && st.DayOfWeek == today).FirstOrDefaultAsync();
+
+            return View(new CurrentCheckingViewModel { Subject = subject, Students = allStudents, SubjectTime = time });
         }
 
         // GET: Attendance/Create

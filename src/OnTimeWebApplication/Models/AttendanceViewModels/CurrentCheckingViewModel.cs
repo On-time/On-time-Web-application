@@ -10,5 +10,7 @@ namespace OnTimeWebApplication.Models.AttendanceViewModels
         public List<CheckingStudentViewModel> Students { get; set; }
 
         public Subject Subject { get; set; }
+
+        public SubjectTime SubjectTime { get; set; }
     }
 }

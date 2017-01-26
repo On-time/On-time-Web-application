@@ -5,7 +5,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>การเช็คชื่อขณะนี้ของวิชา @Model.Subject.Name</h2>
+<h2>การเช็คชื่อขณะนี้ของวิชา @Model.Subject.Name วันที่ @DateTime.Now.ToShortDateString() ตั้งแต่เวลา @Model.SubjectTime.Start.ToShortTimeString()</h2>
+<p id="updateStatus">สถานะการอัพเดท <span id="refreshState" class="label label-default">refresh</span></p>
 
 <table class="table">
     <thead>
@@ -21,9 +22,57 @@
             <tr>
                 <td>@student.Id</td>
                 <td>@student.Name</td>
-                <td>@Html.DisplayFor(model => student.AttendState)</td>
+                <td id="@student.Id">@Html.DisplayFor(model => student.AttendState)</td>
             </tr>
         }
     </tbody>
 </table>
 <a asp-action="CurrentlyPerformCheckingList">กลับไปหน้ารายชื่อวิชา</a>
+@section scripts {
+<script>
+    var socket;
+
+    $(document).ready(function () {
+        socket = new WebSocket('ws://' + window.location.host + '/wsupdate')
+        var data = { subjectId: '@Model.Subject.Id', section: @Model.Subject.Section }
+
+        socket.addEventListener('open', function() {
+            socket.send(JSON.stringify(data))
+            $('#refreshState').replaceWith('<span id="realtimeState" class="label label-success">realtime</span>')
+        })
+        socket.addEventListener('close', function() {
+            $('#realtimeState').replaceWith('<span id="refreshState" class="label label-default">refresh</span>')
+        })
+        socket.addEventListener('error', function() {
+            $('#realtimeState').replaceWith('<span id="errorState" class="label label-danger">error, please refresh</span>')
+        })
+
+        socket.addEventListener('message', receive)
+    })
+
+    function receive(message) {
+        var updates = JSON.parse(message.data)
+        for (var i = 0; i < updates.length; i++) {
+            var column = $('#' + updates[i].StudentId)
+            column.text(parseState(updates[i].AttendState))
+        }
+    }
+
+    function parseState(state) {
+        switch (state) {
+            case 0:
+                return 'มาตรงเวลา'
+            case 1:
+                return 'มาสาย'
+            case 2:
+                return 'ขาดเรียน'
+            case 3:
+                return 'ขาดเรียนแต่เข้าห้องเรียน'
+            case 4:
+                return 'ยังไม่มา'
+            default:
+                return 'ไม่ทราบ'
+        }
+    }
+</script>
+}

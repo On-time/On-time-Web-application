@@ -18,6 +18,7 @@ using OnTimeWebApplication.Data;
 using OnTimeWebApplication.Models;
 using OnTimeWebApplication.Services;
 using OnTimeWebApplication.TokenAuthentication;
+using OnTimeWebApplication.Websocket;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Principal;
@@ -83,6 +84,7 @@ namespace OnTimeWebApplication
                 config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddTransient<AttendanceCheckingService>();
+            services.AddWebSocketManager();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -183,6 +185,8 @@ namespace OnTimeWebApplication
                 SigningCredentials = signingCredentials,
                 IdentityResolver = GetIdentity
             });
+
+            app.MapWebSocketManager("/wsupdate", app.ApplicationServices.GetService<UpdatingWebSocketHandler>());
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
 
