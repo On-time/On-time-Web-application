@@ -128,14 +128,82 @@ namespace OnTimeWebApplication.Controllers
                 {
                     lecturer.AndroidId = androidId;
                     await _context.SaveChangesAsync();
+                    var studentDatas = await GetStudentDatas(lecturer.Id);
+                    var subjectDatas = await GetSubjectDatas(lecturer.Id);
+                    var subjectStudentDatas = await GetSubjectStudentDatas(studentDatas.Select(sd => sd.Id).ToList());
 
-                    return Json(new { status = "register lecturer completed" });
+                    return Json(new { status = "register lecturer completed", Students = studentDatas, Subjects = subjectDatas, SubjectStudents = subjectStudentDatas });
                 }
             }
             else
             {
                 return Json(new { status = "username or password invalid" });
             }
+        }
+
+        private async Task<SimpleStudent[]> GetStudentDatas(string lecturerId)
+        {
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            var subjectIds = await _context.Subjects.Where(s => s.LecturerId == lecturerId).Select(s => s.Id).ToListAsync();
+            var students = await _context.SubjectStudents.Where(ss => subjectIds.Contains(ss.SubjectId)).Select(ss => new SimpleStudent(ss.StudentId, ss.Student.AndroidId)).ToArrayAsync();
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
+
+            return students;
+        }
+
+        private async Task<SimpleSubject[]> GetSubjectDatas(string lecturerId)
+        {
+            var subjects = await _context.Subjects.AsNoTracking().Where(s => s.LecturerId == lecturerId).Select(s => new SimpleSubject(s.Id, s.Section)).ToArrayAsync();
+
+            return subjects;
+        }
+
+        private async Task<SimpleSubjectStudent[]> GetSubjectStudentDatas(List<string> studentIds)
+        {
+            var subjectStudents = await _context.SubjectStudents.AsNoTracking()
+                .Where(ss => studentIds.Contains(ss.StudentId))
+                .Select(ss => new SimpleSubjectStudent(ss.StudentId, ss.SubjectId, ss.SubjectSection))
+                .ToArrayAsync();
+
+            return subjectStudents;
+        }
+
+        private class SimpleStudent
+        {
+            public SimpleStudent(string id, string androidId)
+            {
+                Id = id;
+                AndroidId = androidId;
+            }
+
+            public string Id { get; private set; }
+            public string AndroidId { get; private set; }
+        }
+
+        private class SimpleSubject
+        {
+            public SimpleSubject(string id, byte section)
+            {
+                Id = id;
+                Section = section;
+            }
+
+            public string Id { get; private set; }
+            public byte Section { get; private set; }
+        }
+
+        private class SimpleSubjectStudent
+        {
+            public SimpleSubjectStudent(string studentId, string subjectId, byte subjectSection)
+            {
+                StudentId = studentId;
+                SubjectId = subjectId;
+                SubjectSection = subjectSection;
+            }
+
+            public string StudentId { get; private set; }
+            public string SubjectId { get; private set; }
+            public byte SubjectSection { get; private set; }
         }
     }
 
