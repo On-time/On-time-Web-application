@@ -63,6 +63,10 @@ namespace OnTimeWebApplication
             {
                 options.AddPolicy(Constant.AdministratorOnly, policy => policy.RequireRole(Constant.AdminRoleName, Constant.SuperAdminRoleName));
                 options.AddPolicy(Constant.StudentAndLecturer, policy => policy.RequireRole(Constant.StudentRoleName, Constant.LecturerRoleName));
+                options.AddPolicy(Constant.AdminAndLecturer, policy =>
+                    policy.RequireRole(Constant.SuperAdminRoleName, Constant.AdminRoleName, Constant.LecturerRoleName));
+                options.AddPolicy(Constant.Everyone, policy =>
+                    policy.RequireRole(Constant.SuperAdminRoleName, Constant.AdminRoleName, Constant.LecturerRoleName, Constant.StudentRoleName));
             });
 
             // Add application services.
