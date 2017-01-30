@@ -79,6 +79,7 @@ namespace OnTimeWebApplication
                 options.Password.RequiredLength = 6;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
+                options.User.RequireUniqueEmail = true;
             });
 
             services.Configure<EFCoreOptions>(options => options.ConnectionString = Configuration.GetConnectionString("DefaultConnection"));
